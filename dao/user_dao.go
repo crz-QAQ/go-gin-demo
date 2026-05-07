@@ -67,3 +67,15 @@ func CreateInfo(userId uint, Hobby string, Address string) error {
 	}
 	return nil
 }
+
+// FindUserEasyList 搜素基础表
+func FindUserEasyList() ([]*model.UserEasy, error) {
+	var users []*model.UserEasy // 切片，存多条
+
+	err := db.DB.Find(&users).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+}

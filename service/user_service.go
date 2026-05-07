@@ -60,3 +60,11 @@ func CreateUser(Name string, Age int64, IdNo string, Phone int64, Sex int, Hobby
 	}
 	return user, nil
 }
+
+func FindUserEasyList() ([]*model.UserEasy, error) {
+	user, err := dao.FindUserEasyList()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}

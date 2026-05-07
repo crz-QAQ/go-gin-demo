@@ -46,6 +46,7 @@ func DeleteUser(c *gin.Context) {
 	response.Success(c, true, "删除成功")
 }
 
+// CreateUser 创建用户信息
 func CreateUser(c *gin.Context) {
 	type Param struct {
 		Name    string `form:"name" binding:"required"`
@@ -68,5 +69,14 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 	response.Success(c, user, "创建成功")
+}
 
+// FindUserEasyList 搜素所有用户基础信息
+func FindUserEasyList(c *gin.Context) {
+	user, err := user_service.FindUserEasyList()
+	if err != nil {
+		response.Error(c, "用户创建失败", err)
+		return
+	}
+	response.Success(c, user, "创建成功")
 }
