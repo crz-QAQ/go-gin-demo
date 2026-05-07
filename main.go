@@ -1,20 +1,25 @@
 package main
 
 import (
-	"fmt"
+	"go-gin-demo/model"
+	"go-gin-demo/pkg/db"
+	"go-gin-demo/router"
 )
 
-//TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
-// the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
 func main() {
-	//TIP <p>Press <shortcut actionId="ShowIntentionActions"/> when your caret is at the underlined text
-	// to see how GoLand suggests fixing the warning.</p><p>Alternatively, if available, click the lightbulb to view possible fixes.</p>
-	s := "gopher"
-	fmt.Println("Hello and welcome, %s!", s)
+	// 初始化DB
+	db.InitDB()
 
-	for i := 1; i <= 5; i++ {
-		//TIP <p>To start your debugging session, right-click your code in the editor and select the Debug option.</p> <p>We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-		// for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.</p>
-		fmt.Println("i =", 100/i)
+	/// 2. 自动迁移所有表（企业级终极写法，永不报错）
+	for _, m := range model.GetModels() {
+		if err := db.DB.AutoMigrate(m); err != nil {
+			panic("表迁移失败：" + err.Error())
+		}
 	}
+
+	// 初始化路由
+	r := router.InitRouter()
+
+	// 启动
+	_ = r.Run("0.0.0.0:8080")
 }
