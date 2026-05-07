@@ -5,5 +5,6 @@ func GetModels() []interface{} {
 	return []interface{}{
 		&UserEasy{},
 		&UserDetail{},
+		&UserInfo{},
 	}
 }

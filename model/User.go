@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
@@ -17,11 +15,17 @@ type UserEasy struct {
 // 用户详情表
 type UserDetail struct {
 	gorm.Model
-	IdNo     string
-	Phone    int64
-	Sex      int
-	Birthday time.Time
-	UserId   uint
+	IdNo   string
+	Phone  int64
+	Sex    int
+	UserId uint
+}
+
+type UserInfo struct {
+	gorm.Model
+	Hobby   string
+	Address string
+	UserId  uint
 }
 
 func (UserEasy) TableName() string {
@@ -30,4 +34,13 @@ func (UserEasy) TableName() string {
 
 func (UserDetail) TableName() string {
 	return "user_details"
+}
+
+func (UserInfo) TableName() string { return "user_infos" }
+
+func (u *UserEasy) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.Age < 18 {
+		u.Age = 18 // 未满18自动改为18
+	}
+	return
 }

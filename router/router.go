@@ -15,6 +15,7 @@ func InitRouter() *gin.Engine {
 	{
 		userGroup.POST("/soft-delete", user_api.SoftDeleteUser)
 		userGroup.POST("/delete", user_api.DeleteUser)
+		userGroup.POST("/create", user_api.CreateUser)
 	}
 
 	return r
