@@ -61,8 +61,90 @@ func CreateUser(Name string, Age int64, IdNo string, Phone int64, Sex int, Hobby
 	return user, nil
 }
 
+// FindUserEasyList 搜素基础表
 func FindUserEasyList() ([]*model.UserEasy, error) {
 	user, err := dao.FindUserEasyList()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// FindUserEasyListReady 查询关联表全部记录
+func FindUserEasyListReady() ([]*model.UserEasy, error) {
+	user, err := dao.FindUserEasyListReady()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// FindUserInfoList 查询关联表全部记录（普通join）
+func FindUserInfoList() ([]interface{}, error) {
+	user, err := dao.FindUserInfoList()
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// FindWhere 查询关联表全部记录Where
+func FindWhere(Name string, IdNo string) ([]interface{}, error) {
+	user, err := dao.FindWhere(Name, IdNo)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// StructFind 查询关联表全部记录Struct
+func StructFind(Name string) ([]interface{}, error) {
+	user, err := dao.StructFind(Name)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// MapFind 查询关联表全部记录Map
+func MapFind(Name string) ([]interface{}, error) {
+	user, err := dao.MapFind(Name)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
+// UpdateSave 全量更新
+func UpdateSave(Name string, IdNo string, Phone int64) (*model.UserDetail, error) {
+	user, err := dao.GetUserByName(Name)
+	if err != nil {
+		return nil, err
+	}
+	detail, err := dao.UpdateSave(IdNo, Phone, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return detail, nil
+}
+
+// UpdateService 局部更新
+func UpdateService(Name string, IdNo string, Phone int64) (*model.UserDetail, error) {
+	user, err := dao.GetUserByName(Name)
+	if err != nil {
+		return nil, err
+	}
+	detail, err := dao.Update(IdNo, Phone, user.ID)
+	if err != nil {
+		return nil, err
+	}
+	return detail, nil
+
+}
+
+// UnscopedService 查找被软删除的记录
+func UnscopedService() (*model.UserEasy, error) {
+	user, err := dao.UnscopedFind()
 	if err != nil {
 		return nil, err
 	}
