@@ -27,5 +27,12 @@ func InitRouter() *gin.Engine {
 		userGroup.GET("/UnscopedFind", test_user_api.UnscopedFindApi)
 	}
 
+	redisGroup := r.Group("/redis")
+	{
+		redisGroup.POST("/setRedis", test_user_api.SetRedisApi)
+		redisGroup.POST("/getRedis", test_user_api.GetRedisApi)
+		redisGroup.POST("/deleRedis", test_user_api.DeleRedisApi)
+	}
+
 	return r
 }

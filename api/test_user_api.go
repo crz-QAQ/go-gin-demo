@@ -1,4 +1,4 @@
-package test_user_api
+package api
 
 import (
 	"go-gin-demo/pkg/response"
@@ -19,7 +19,7 @@ func SoftDeleteUser(c *gin.Context) {
 		return
 	}
 
-	if err := user_service.SoftDeleteUser(param.ID); err != nil {
+	if err := service.SoftDeleteUser(param.ID); err != nil {
 		response.Error(c, "删除失败", err)
 		return
 	}
@@ -39,7 +39,7 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
-	if err := user_service.DeleteUser(param.ID); err != nil {
+	if err := service.DeleteUser(param.ID); err != nil {
 		response.Error(c, "删除失败", err)
 		return
 	}
@@ -63,7 +63,7 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	user, err := user_service.CreateUser(param.Name, param.Age, param.IdNo, param.Phone, param.Sex, param.Hobby, param.Address)
+	user, err := service.CreateUser(param.Name, param.Age, param.IdNo, param.Phone, param.Sex, param.Hobby, param.Address)
 	if err != nil {
 		response.Error(c, "用户创建失败", err)
 		return
@@ -73,7 +73,7 @@ func CreateUser(c *gin.Context) {
 
 // FindUserEasyList 搜素所有用户基础信息
 func FindUserEasyList(c *gin.Context) {
-	user, err := user_service.FindUserEasyList()
+	user, err := service.FindUserEasyList()
 	if err != nil {
 		response.Error(c, "用户基础信息查询失败", err)
 		return
@@ -83,7 +83,7 @@ func FindUserEasyList(c *gin.Context) {
 
 // FindUserEasyListReady 查询关联表全部记录
 func FindUserEasyListReady(c *gin.Context) {
-	user, err := user_service.FindUserEasyListReady()
+	user, err := service.FindUserEasyListReady()
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -92,7 +92,7 @@ func FindUserEasyListReady(c *gin.Context) {
 
 // FindUserInfoList 查询关联表全部记录（普通join）
 func FindUserInfoList(c *gin.Context) {
-	user, err := user_service.FindUserInfoList()
+	user, err := service.FindUserInfoList()
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -110,7 +110,7 @@ func FindWhere(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	user, err := user_service.FindWhere(param.Name, param.IdNo)
+	user, err := service.FindWhere(param.Name, param.IdNo)
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -127,7 +127,7 @@ func StructFind(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	user, err := user_service.StructFind(param.Name)
+	user, err := service.StructFind(param.Name)
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -144,7 +144,7 @@ func MapFind(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	user, err := user_service.MapFind(param.Name)
+	user, err := service.MapFind(param.Name)
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -163,7 +163,7 @@ func UpdateSave(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	detail, err := user_service.UpdateSave(param.Name, param.IdNo, param.Phone)
+	detail, err := service.UpdateSave(param.Name, param.IdNo, param.Phone)
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 	}
@@ -182,7 +182,7 @@ func UpdateApi(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	detail, err := user_service.UpdateService(param.Name, param.IdNo, param.Phone)
+	detail, err := service.UpdateService(param.Name, param.IdNo, param.Phone)
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 		return
@@ -192,7 +192,7 @@ func UpdateApi(c *gin.Context) {
 
 // UnscopedFindApi 查找被软删除的记录
 func UnscopedFindApi(c *gin.Context) {
-	user, err := user_service.UnscopedService()
+	user, err := service.UnscopedService()
 	if err != nil {
 		response.Error(c, "用户基础查询失败", err)
 		return
