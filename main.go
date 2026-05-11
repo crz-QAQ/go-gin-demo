@@ -3,14 +3,15 @@ package main
 import (
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/db"
+	"go-gin-demo/pkg/redis"
 	"go-gin-demo/router"
 )
 
 func main() {
 	// 初始化DB
 	db.InitDB()
+	redis.Init()
 
-	/// 2. 自动迁移所有表（企业级终极写法，永不报错）
 	for _, m := range model.GetModels() {
 		if err := db.DB.AutoMigrate(m); err != nil {
 			panic("表迁移失败：" + err.Error())
