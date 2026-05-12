@@ -4,7 +4,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// 用户主表
+// UserEasy 用户主表
 type UserEasy struct {
 	gorm.Model
 	Name       string
@@ -12,7 +12,7 @@ type UserEasy struct {
 	UserDetail *UserDetail `gorm:"foreignKey:UserId;references:ID"`
 }
 
-// 用户详情表
+// UserDetail 用户详情表
 type UserDetail struct {
 	gorm.Model
 	IdNo   string

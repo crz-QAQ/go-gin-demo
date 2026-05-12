@@ -6,5 +6,7 @@ func GetModels() []interface{} {
 		&UserEasy{},
 		&UserDetail{},
 		&UserInfo{},
+		&DataAccount{},
+		&DataAccountToken{},
 	}
 }

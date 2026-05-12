@@ -1,4 +1,4 @@
-package api
+package redis_api
 
 import (
 	"go-gin-demo/pkg/response"

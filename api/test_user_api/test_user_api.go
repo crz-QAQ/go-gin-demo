@@ -1,4 +1,4 @@
-package api
+package test_user_api
 
 import (
 	"go-gin-demo/pkg/response"
