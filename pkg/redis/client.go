@@ -9,7 +9,11 @@ func Set(key string, value interface{}, expiration time.Duration) error {
 
 // Get 获取key
 func Get(key string) (string, error) {
-	return client.Get(ctx, key).Result()
+	redis, err := client.Get(ctx, key).Result()
+	if err != nil {
+		return "", err
+	}
+	return redis, nil
 }
 
 // Del 删除key

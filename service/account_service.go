@@ -4,7 +4,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
-	"fmt"
 	"go-gin-demo/dao"
 	"go-gin-demo/model"
 )
@@ -18,8 +17,17 @@ func RegisterAccount(Name string, Phone string, Password string, Nickname string
 	if Nickname == "" {
 		Nickname = "测试用户"
 	}
+
+	is_account, err := dao.FindAccountByPhone(Phone)
+	if err != nil {
+		return nil, err
+	}
+	if is_account != nil {
+		return nil, errors.New("该手机号已经存在注册")
+	}
+
 	// 拼接电话号和密码 ,获取加密的密码sha256
-	plain := fmt.Sprint("%d%s", Phone, Password)
+	plain := Phone + Password
 	hash := sha256.Sum256([]byte(plain))
 	encryptedPassword := hex.EncodeToString(hash[:])
 

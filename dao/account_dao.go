@@ -29,3 +29,10 @@ func RegisterAccount(Name string, Phone string, Password string, Nickname string
 	}
 	return account, nil
 }
+
+// FindAccountByPhone 手机号查找用户
+func FindAccountByPhone(phone string) (*model.DataAccount, error) {
+	var account model.DataAccount
+	err := db.DB.Where("phone = ?", phone).First(&account).Error
+	return &account, err
+}

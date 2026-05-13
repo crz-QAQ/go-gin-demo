@@ -4,6 +4,7 @@ import (
 	"go-gin-demo/api/account_api"
 	"go-gin-demo/api/redis_api"
 	"go-gin-demo/api/test_user_api"
+	"go-gin-demo/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,13 +33,18 @@ func InitRouter() *gin.Engine {
 	redisGroup := r.Group("/redis")
 	{
 		redisGroup.POST("/setRedis", redis_api.SetRedisApi)
-		redisGroup.POST("/getRedis", redis_api.GetRedisApi)
-		redisGroup.POST("/deleRedis", redis_api.DeleRedisApi)
+		authGroup := redisGroup.Use(middleware.AuthLogin())
+		{
+			authGroup.POST("/getRedis", redis_api.GetRedisApi)
+			authGroup.POST("/deleRedis", redis_api.DeleRedisApi)
+		}
+
 	}
 
 	accountGroup := r.Group("/account")
 	{
 		accountGroup.POST("/register", account_api.Register)
+
 	}
 
 	return r
