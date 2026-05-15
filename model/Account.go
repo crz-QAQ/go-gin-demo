@@ -25,3 +25,15 @@ type DataAccountToken struct {
 	AccountId int64
 	Token     string
 }
+
+// DataAccountDetail 用户详情表
+type DataAccountDetail struct {
+	gorm.Model
+	AccountId int64
+	IdNo      string
+	Sex       int8
+	Age       int8
+	Hobby     string
+	Address   string
+	Nation    string
+}

@@ -8,5 +8,6 @@ func GetModels() []interface{} {
 		&UserInfo{},
 		&DataAccount{},
 		&DataAccountToken{},
+		&DataAccountDetail{},
 	}
 }

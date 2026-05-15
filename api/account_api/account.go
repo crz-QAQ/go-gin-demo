@@ -66,3 +66,39 @@ func PersonalMsg(c *gin.Context) {
 	}
 	response.Success(c, account, "用户基础数据")
 }
+
+// LogOut 登出
+func LogOut(c *gin.Context) {
+	token, _ := c.Get("token")
+	err := service.LogOutService(token.(string))
+	if err != nil {
+		response.Error(c, "登出失败", err)
+		return
+	}
+	response.Success(c, true, "登出成功")
+}
+
+// CreateDetail 创建用户详情
+func CreateDetail(c *gin.Context) {
+	type Param struct {
+		IdNo    string `form:"id_no" binding:"required"`
+		Sex     int8   `form:"sex"`
+		Age     int8   `form:"age"`
+		Hobby   string `form:"hobby"`
+		Address string `form:"address"`
+		Nation  string `form:"nation"`
+	}
+
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	token, _ := c.Get("token")
+	detail, err := service.CreateDetailService(token.(string), param.IdNo, param.Sex, param.Age, param.Hobby, param.Address, param.Nation)
+	if err != nil {
+		response.Error(c, "创建详情失败", err)
+		return
+	}
+	response.Success(c, detail, "用户详情创建成功")
+}

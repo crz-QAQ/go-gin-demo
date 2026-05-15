@@ -6,6 +6,7 @@ import (
 	"errors"
 	"go-gin-demo/dao"
 	"go-gin-demo/model"
+	"go-gin-demo/pkg/redis"
 )
 
 // RegisterAccount 用户注册
@@ -69,6 +70,12 @@ func LoginAccount(Phone string, Password string, IP string) (map[string]interfac
 		return nil, err
 	}
 
+	// 刷新最近登录时间
+	err = dao.RefreshAccount(IP, Phone)
+	if err != nil {
+		return nil, err
+	}
+
 	// 创建新的token记录
 	err = dao.CreateToken(account.ID, token)
 	if err != nil {
@@ -90,4 +97,28 @@ func PersonalMsgService(token string) (map[string]interface{}, error) {
 		return nil, err
 	}
 	return account, nil
+}
+
+// LogOutService 登出
+func LogOutService(token string) error {
+	redisKey := "login:token:" + token
+	err := redis.Del(redisKey)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// CreateDetailService 创建用户详情
+func CreateDetailService(token string, IdNo string, Sex int8, Age int8, Hobby string, Address string, Nation string) (*model.DataAccountDetail, error) {
+	account, err := GetAccountLogin(token)
+	if err != nil {
+		return nil, err
+	}
+	accountId := uint64(account["id"].(uint))
+	detail, err := dao.CreateDetail(int64(accountId), IdNo, Sex, Age, Hobby, Address, Nation)
+	if err != nil {
+		return nil, err
+	}
+	return detail, nil
 }
