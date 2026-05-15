@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"go-gin-demo/dao"
 	"go-gin-demo/pkg/redis"
 	"time"
 
@@ -28,4 +29,23 @@ func SetToken(Phone string, IP string, Role int8) (string, error) {
 	}
 
 	return token, nil
+}
+
+// GetAccountLogin 通过token获取用户基础数据
+func GetAccountLogin(token string) (map[string]interface{}, error) {
+	account_token, err := dao.FindAccountIdByToken(token)
+	if err != nil {
+		return nil, err
+	}
+	account, err := dao.FindAccountById(account_token.AccountId)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"id":       account.ID,
+		"name":     account.Name,
+		"phone":    account.Phone,
+		"role":     account.Role,
+		"nickname": account.Nickname,
+	}, nil
 }

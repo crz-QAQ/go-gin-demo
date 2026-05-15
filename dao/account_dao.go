@@ -4,6 +4,8 @@ import (
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/db"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 // RegisterAccount 注册（创建用户表）
@@ -34,5 +36,43 @@ func RegisterAccount(Name string, Phone string, Password string, Nickname string
 func FindAccountByPhone(phone string) (*model.DataAccount, error) {
 	var account model.DataAccount
 	err := db.DB.Where("phone = ?", phone).First(&account).Error
-	return &account, err
+	if err == gorm.ErrRecordNotFound {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &account, nil
+}
+
+// CreateToken 创建新的token记录
+func CreateToken(ID uint, Token string) error {
+	err := db.DB.Create(&model.DataAccountToken{
+		AccountId: int64(ID),
+		Token:     Token,
+	}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// FindAccountById 通过ID 查找用户
+func FindAccountById(id int64) (*model.DataAccount, error) {
+	var account model.DataAccount
+	err := db.DB.Where("id = ?", id).First(&account).Error
+	if err != nil {
+		return nil, err
+	}
+	return &account, nil
+}
+
+// FindAccountIdByToken 通过token获取用户信息
+func FindAccountIdByToken(token string) (*model.DataAccountToken, error) {
+	var account_token model.DataAccountToken
+	err := db.DB.Where("token = ?", token).First(&account_token).Error
+	if err != nil {
+		return nil, err
+	}
+	return &account_token, nil
 }

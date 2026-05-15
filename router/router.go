@@ -44,6 +44,12 @@ func InitRouter() *gin.Engine {
 	accountGroup := r.Group("/account")
 	{
 		accountGroup.POST("/register", account_api.Register)
+		accountGroup.POST("/login", account_api.Login)
+
+		authGroup := accountGroup.Use(middleware.AuthLogin())
+		{
+			authGroup.GET("/personMsg", account_api.PersonalMsg)
+		}
 
 	}
 
