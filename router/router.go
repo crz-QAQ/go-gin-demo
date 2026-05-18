@@ -45,6 +45,7 @@ func InitRouter() *gin.Engine {
 	{
 		accountGroup.POST("/register", account_api.Register)
 		accountGroup.POST("/login", account_api.Login)
+		accountGroup.POST("/restore", account_api.RestoreDeleteAccount)
 
 		authGroup := accountGroup.Use(middleware.AuthLogin())
 		{
@@ -52,6 +53,9 @@ func InitRouter() *gin.Engine {
 			authGroup.GET("/personMsg", account_api.PersonalMsg)
 			authGroup.POST("/create/detail", account_api.CreateDetail)
 			authGroup.GET("/search/detail", account_api.FindDetail)
+			authGroup.POST("/update/detail", account_api.UpdateDetail)
+			authGroup.DELETE("/delete/detail", account_api.DeleteDetail)
+			authGroup.DELETE("/delete", account_api.DeleteAccount)
 		}
 
 	}

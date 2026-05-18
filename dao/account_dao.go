@@ -158,7 +158,7 @@ func FindDetailByAccountId(AccountID int64) (*model.DataAccountDetail, error) {
 // UpdateDetailById 修改用户详情
 func UpdateDetailById(ID uint, IdNo string, Sex int8, Age int8, Hobby string, Address string, Nation string) (*model.DataAccountDetail, error) {
 	var detail model.DataAccountDetail
-	result := db.DB.Model(&detail).Where("account_id = ?", ID).Updates(model.DataAccountDetail{
+	result := db.DB.Model(&detail).Where("id = ?", ID).Updates(model.DataAccountDetail{
 		IdNo:    IdNo,
 		Sex:     Sex,
 		Age:     Age,
@@ -175,4 +175,57 @@ func UpdateDetailById(ID uint, IdNo string, Sex int8, Age int8, Hobby string, Ad
 	}
 	_ = db.DB.Where("id = ?", ID).First(&detail).Error
 	return &detail, nil
+}
+
+// DeleteDetailById 删除用户详情
+func DeleteDetailById(ID uint) (bool, error) {
+	var account model.DataAccountDetail
+	err := db.DB.Model(&account).Where("id = ?", ID).Delete(&account).Error
+	if err != nil {
+		return false, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("未找到删除数据")
+	}
+	return true, nil
+}
+
+// DeleteAccountById 注销用户信息
+func DeleteAccountById(ID uint) (bool, error) {
+	var account model.DataAccount
+	err := db.DB.Model(&account).Where("id = ?", ID).Delete(&account).Error
+	if err != nil {
+		return false, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("未找到删除的数据")
+	}
+	return true, nil
+}
+
+// FindDeleteAccountByPhone 查找被软删除的数据
+func FindDeleteAccountByPhone(Phone string) (*model.DataAccount, error) {
+	var account model.DataAccount
+	err := db.DB.Model(&account).Where("phone = ?", Phone).Unscoped().Last(&account).Error
+	if err != nil {
+		return nil, err
+	}
+	return &account, nil
+}
+
+// RestoreAccountByID 恢复软删除的数据
+func RestoreAccountByID(ID uint) (*model.DataAccount, error) {
+	var account model.DataAccount
+	err := db.DB.Unscoped().
+		Model(&account).
+		Where("id = ?", ID).
+		Update("deleted_at", nil).Error
+	if err != nil {
+		return nil, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("未找到删除的数据")
+	}
+	_ = db.DB.Where("id = ?", ID).First(&account).Error
+	return &account, nil
 }

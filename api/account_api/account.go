@@ -103,6 +103,7 @@ func CreateDetail(c *gin.Context) {
 	response.Success(c, detail, "用户详情创建成功")
 }
 
+// FindDetail 查找用户详情
 func FindDetail(c *gin.Context) {
 	token, _ := c.Get("token")
 	detail, err := service.FindDetailService(token.(string))
@@ -111,4 +112,74 @@ func FindDetail(c *gin.Context) {
 		return
 	}
 	response.Success(c, detail, "查询成功")
+}
+
+// UpdateDetail 更新用户详情
+func UpdateDetail(c *gin.Context) {
+	type Param struct {
+		IdNo    string `form:"id_no"`
+		Sex     int8   `form:"sex"`
+		Age     int8   `form:"age"`
+		Hobby   string `form:"hobby"`
+		Address string `form:"address"`
+		Nation  string `form:"nation"`
+	}
+
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+
+	token, _ := c.Get("token")
+	// 更新用户详情
+	detail, err := service.UpdateDetailService(token.(string), param.IdNo, param.Sex, param.Age, param.Hobby, param.Address, param.Nation)
+	if err != nil {
+		response.Error(c, "更新用户详情失败", err)
+		return
+	}
+	response.Success(c, detail, "更新用户详情成功")
+}
+
+// DeleteDetail 删除用户详情
+func DeleteDetail(c *gin.Context) {
+	token, _ := c.Get("token")
+	result, err := service.DeleteDetailService(token.(string))
+	if err != nil {
+		response.Error(c, "删除用户详情失败", err)
+		return
+	}
+	response.Success(c, result, "删除用户详情成功")
+}
+
+// DeleteAccount 注销用户
+func DeleteAccount(c *gin.Context) {
+	token, _ := c.Get("token")
+	result, err := service.DeleteAccountService(token.(string))
+	if err != nil {
+		response.Error(c, "注销用户失败", err)
+		return
+	}
+	response.Success(c, result, "注销用户成功")
+}
+
+// RestoreDeleteAccount 恢复软删除的数据
+func RestoreDeleteAccount(c *gin.Context) {
+	type Param struct {
+		Phone string `form:"phone" binding:"required"`
+	}
+
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+
+	// 恢复软删除的数据
+	account, err := service.RestoreDeleteAccountService(param.Phone)
+	if err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	response.Success(c, account, "恢复软删除数据")
 }

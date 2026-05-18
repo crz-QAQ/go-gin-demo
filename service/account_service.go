@@ -8,17 +8,17 @@ import (
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/redis"
 	"strconv"
+	"time"
 )
 
 // RegisterAccount 用户注册
 func RegisterAccount(Name string, Phone string, Password string, Nickname string, Role int8, Confirm string, IP string) (*model.DataAccount, error) {
 	// 防抖
 	redisKey := "register" + Phone
-	cacheVal, _ := redis.Get(redisKey)
-	if cacheVal != "" {
+	lockSuccess := redis.SetNx(redisKey, "1", 10*time.Second)
+	if !lockSuccess {
 		return nil, errors.New("请勿重复点击")
 	}
-	_ = redis.Set(redisKey, Phone, 10)
 
 	if Password != Confirm {
 		return nil, errors.New("确认密码与密码不一致，请检查")
@@ -57,6 +57,12 @@ func RegisterAccount(Name string, Phone string, Password string, Nickname string
 
 // LoginAccount 用户登陆
 func LoginAccount(Phone string, Password string, IP string) (map[string]interface{}, error) {
+	// 防抖
+	redisKey := "login" + Phone
+	lockSuccess := redis.SetNx(redisKey, "1", 10*time.Second)
+	if !lockSuccess {
+		return nil, errors.New("请勿重复点击")
+	}
 	account, err := dao.FindAccountByPhone(Phone)
 	if err != nil {
 		return nil, err
@@ -118,6 +124,39 @@ func LogOutService(token string) error {
 	return nil
 }
 
+// DeleteAccountService 注销用户信息
+func DeleteAccountService(token string) (bool, error) {
+	account, err := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	result, err := dao.DeleteAccountById(userId)
+	if err != nil {
+		return false, err
+	}
+	// 清空token
+	redisKey := "login:token:" + token
+	err = redis.Del(redisKey)
+	if err != nil {
+		return false, err
+	}
+	return result, nil
+}
+
+// RestoreDeleteAccountService 恢复软删除的数据
+func RestoreDeleteAccountService(Phone string) (*model.DataAccount, error) {
+	// 查找被软删除的数据
+	account, err := dao.FindDeleteAccountByPhone(Phone)
+	if err != nil {
+		return nil, err
+	}
+	// 恢复软删除数据
+	restore, err := dao.RestoreAccountByID(account.ID)
+	if err != nil {
+		return nil, err
+	}
+	return restore, nil
+}
+
 // CreateDetailService 创建用户详情
 func CreateDetailService(token string, IdNo string, Sex int8, Age int8, Hobby string, Address string, Nation string) (*model.DataAccountDetail, error) {
 	account, err := GetAccountLogin(token)
@@ -126,7 +165,7 @@ func CreateDetailService(token string, IdNo string, Sex int8, Age int8, Hobby st
 	userIdInt64 := int64(userId)
 	// 防抖
 	redisKey := "detail" + strconv.FormatUint(uint64(userId), 10)
-	lockSuccess := redis.SetNx(redisKey, "1", 10)
+	lockSuccess := redis.SetNx(redisKey, "1", 10*time.Second)
 	if !lockSuccess {
 		return nil, errors.New("请勿重复点击")
 	}
@@ -157,4 +196,60 @@ func FindDetailService(token string) (*model.DataAccountDetail, error) {
 	}
 
 	return detail, nil
+}
+
+// UpdateDetailService 更新用户详情
+func UpdateDetailService(token string, IdNo string, Sex int8, Age int8, Hobby string, Address string, Nation string) (*model.DataAccountDetail, error) {
+	account, _ := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+	// 防抖
+	redisKey := "update:detail" + strconv.FormatUint(uint64(userId), 10)
+	lockSuccess := redis.SetNx(redisKey, "1", 10*time.Second)
+	if !lockSuccess {
+		return nil, errors.New("请勿重复点击")
+	}
+	// 查询具体用户详情
+	detail, err := dao.FindDetailByAccountId(userIdInt64)
+	if err != nil {
+		return nil, err
+	}
+	if detail == nil {
+		return nil, errors.New("您未创建用户详情")
+	}
+
+	// 更新用户详情
+	update, err := dao.UpdateDetailById(detail.ID, IdNo, Sex, Age, Hobby, Address, Nation)
+	if err != nil {
+		return nil, err
+	}
+	return update, nil
+}
+
+// DeleteDetailService 删除用户详情
+func DeleteDetailService(token string) (bool, error) {
+	account, err := GetAccountLogin(token)
+	if err != nil {
+		return false, err
+	}
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+
+	// 查找具体用户
+	detail, err := dao.FindDetailByAccountId(userIdInt64)
+	if err != nil {
+		return false, err
+	}
+	if detail == nil {
+		return false, nil
+	}
+
+	// 删除详情
+	result, err := dao.DeleteDetailById(detail.ID)
+	if err != nil {
+		return false, err
+	}
+	return result, nil
 }
