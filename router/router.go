@@ -51,6 +51,7 @@ func InitRouter() *gin.Engine {
 			authGroup.GET("/logout", account_api.LogOut)
 			authGroup.GET("/personMsg", account_api.PersonalMsg)
 			authGroup.POST("/create/detail", account_api.CreateDetail)
+			authGroup.GET("/search/detail", account_api.FindDetail)
 		}
 
 	}

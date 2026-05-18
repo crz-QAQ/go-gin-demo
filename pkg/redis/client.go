@@ -1,6 +1,8 @@
 package redis
 
-import "time"
+import (
+	"time"
+)
 
 // Set 设置key-value
 func Set(key string, value interface{}, expiration time.Duration) error {
@@ -24,4 +26,13 @@ func Del(key string) error {
 // Expire 设置过期时间
 func Expire(key string, expiration time.Duration) error {
 	return client.Expire(ctx, key, expiration).Err()
+}
+
+// SetNx  仅当key不存在时设置
+func SetNx(key string, value interface{}, expiration time.Duration) bool {
+	result, err := client.SetNX(ctx, key, value, expiration).Result()
+	if err != nil {
+		return false
+	}
+	return result
 }

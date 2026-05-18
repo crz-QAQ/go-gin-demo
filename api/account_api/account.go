@@ -102,3 +102,13 @@ func CreateDetail(c *gin.Context) {
 	}
 	response.Success(c, detail, "用户详情创建成功")
 }
+
+func FindDetail(c *gin.Context) {
+	token, _ := c.Get("token")
+	detail, err := service.FindDetailService(token.(string))
+	if err != nil {
+		response.Error(c, "查询失败", err)
+		return
+	}
+	response.Success(c, detail, "查询成功")
+}

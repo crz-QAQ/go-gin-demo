@@ -7,10 +7,19 @@ import (
 	"go-gin-demo/dao"
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/redis"
+	"strconv"
 )
 
 // RegisterAccount 用户注册
 func RegisterAccount(Name string, Phone string, Password string, Nickname string, Role int8, Confirm string, IP string) (*model.DataAccount, error) {
+	// 防抖
+	redisKey := "register" + Phone
+	cacheVal, _ := redis.Get(redisKey)
+	if cacheVal != "" {
+		return nil, errors.New("请勿重复点击")
+	}
+	_ = redis.Set(redisKey, Phone, 10)
+
 	if Password != Confirm {
 		return nil, errors.New("确认密码与密码不一致，请检查")
 	}
@@ -112,13 +121,40 @@ func LogOutService(token string) error {
 // CreateDetailService 创建用户详情
 func CreateDetailService(token string, IdNo string, Sex int8, Age int8, Hobby string, Address string, Nation string) (*model.DataAccountDetail, error) {
 	account, err := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+	// 防抖
+	redisKey := "detail" + strconv.FormatUint(uint64(userId), 10)
+	lockSuccess := redis.SetNx(redisKey, "1", 10)
+	if !lockSuccess {
+		return nil, errors.New("请勿重复点击")
+	}
+
+	is_detail, err := dao.FindDetailByAccountId(userIdInt64)
+	if is_detail != nil {
+		return nil, errors.New("您已创建过详情资料，禁止重复创建")
+	}
+	detail, err := dao.CreateDetail(int64(uint64(account["id"].(uint))), IdNo, Sex, Age, Hobby, Address, Nation)
 	if err != nil {
 		return nil, err
 	}
-	accountId := uint64(account["id"].(uint))
-	detail, err := dao.CreateDetail(int64(accountId), IdNo, Sex, Age, Hobby, Address, Nation)
+	return detail, nil
+}
+
+// FindDetailService 查询用户详情
+func FindDetailService(token string) (*model.DataAccountDetail, error) {
+	account, err := GetAccountLogin(token)
 	if err != nil {
 		return nil, err
 	}
+	detail, err := dao.FindDetailByAccountId(int64(uint64(account["id"].(uint))))
+	if err != nil {
+		return nil, err
+	}
+	if detail == nil {
+		return nil, errors.New("未创建用户详情")
+	}
+
 	return detail, nil
 }

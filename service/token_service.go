@@ -41,11 +41,5 @@ func GetAccountLogin(token string) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	return map[string]interface{}{
-		"id":       account.ID,
-		"name":     account.Name,
-		"phone":    account.Phone,
-		"role":     account.Role,
-		"nickname": account.Nickname,
-	}, nil
+	return account, nil
 }
