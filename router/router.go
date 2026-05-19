@@ -46,6 +46,7 @@ func InitRouter() *gin.Engine {
 		accountGroup.POST("/register", account_api.Register)
 		accountGroup.POST("/login", account_api.Login)
 		accountGroup.POST("/restore", account_api.RestoreDeleteAccount)
+		accountGroup.POST("/forgetPasswrod", account_api.ForgetPassword)
 
 		authGroup := accountGroup.Use(middleware.AuthLogin())
 		{
@@ -56,6 +57,8 @@ func InitRouter() *gin.Engine {
 			authGroup.POST("/update/detail", account_api.UpdateDetail)
 			authGroup.DELETE("/delete/detail", account_api.DeleteDetail)
 			authGroup.DELETE("/delete", account_api.DeleteAccount)
+			authGroup.POST("/changePassword", account_api.UpdatePasswordToken)
+			authGroup.POST("/changeNickname", account_api.UpdateNickname)
 		}
 
 	}

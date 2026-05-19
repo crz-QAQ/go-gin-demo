@@ -183,3 +183,64 @@ func RestoreDeleteAccount(c *gin.Context) {
 	}
 	response.Success(c, account, "恢复软删除数据")
 }
+
+// UpdatePasswordToken 登录后修改密码
+func UpdatePasswordToken(c *gin.Context) {
+	type Param struct {
+		Password string `form:"password" binding:"required"`
+		Confirm  string `form:"confirm" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	token, _ := c.Get("token")
+	// 登录后修改密码
+	result, err := service.TokenPasswordService(token.(string), param.Password, param.Confirm)
+	if err != nil {
+		response.Error(c, "密码修改失败", err)
+		return
+	}
+	response.Success(c, result, "密码修改成功")
+}
+
+// ForgetPassword 忘记密码
+func ForgetPassword(c *gin.Context) {
+	type Param struct {
+		Phone    string `form:"phone" binding:"required"`
+		Password string `form:"password" binding:"required"`
+		Confirm  string `form:"confirm" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	// 忘记密码
+	result, err := service.PhonePasswordService(param.Phone, param.Password, param.Confirm)
+	if err != nil {
+		response.Error(c, "密码修改失败", err)
+		return
+	}
+	response.Success(c, result, "密码修改成功")
+}
+
+// UpdateNickname 修改昵称
+func UpdateNickname(c *gin.Context) {
+	type Param struct {
+		Nickname string `form:"nickname" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	// 修改昵称
+	token, _ := c.Get("token")
+	result, err := service.UpdateNicknameService(token.(string), param.Nickname)
+	if err != nil {
+		response.Error(c, "修改失败", err)
+	}
+	response.Success(c, result, "修改成功")
+}
