@@ -225,3 +225,22 @@ func ForgetPassword(c *gin.Context) {
 	}
 	response.Success(c, result, "密码修改成功")
 }
+
+// UpdateNickname 修改昵称
+func UpdateNickname(c *gin.Context) {
+	type Param struct {
+		Nickname string `form:"nickname" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	// 修改昵称
+	token, _ := c.Get("token")
+	result, err := service.UpdateNicknameService(token.(string), param.Nickname)
+	if err != nil {
+		response.Error(c, "修改失败", err)
+	}
+	response.Success(c, result, "修改成功")
+}

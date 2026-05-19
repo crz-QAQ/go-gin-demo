@@ -58,6 +58,7 @@ func InitRouter() *gin.Engine {
 			authGroup.DELETE("/delete/detail", account_api.DeleteDetail)
 			authGroup.DELETE("/delete", account_api.DeleteAccount)
 			authGroup.POST("/changePassword", account_api.UpdatePasswordToken)
+			authGroup.POST("/changeNickname", account_api.UpdateNickname)
 		}
 
 	}

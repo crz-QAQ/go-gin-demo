@@ -257,7 +257,10 @@ func DeleteDetailService(token string) (bool, error) {
 // TokenPasswordService 登录后的密码修改
 func TokenPasswordService(token string, Password string, Confirm string) (bool, error) {
 	// 防抖
-	account, _ := GetAccountLogin(token)
+	account, err := GetAccountLogin(token)
+	if err != nil {
+		return false, err
+	}
 	// 获取用户id
 	Phone := account["phone"].(string)
 	redisKey := "update/password" + Phone
@@ -281,6 +284,12 @@ func TokenPasswordService(token string, Password string, Confirm string) (bool, 
 	if err != nil {
 		return false, err
 	}
+	// 登出
+	err = LogOutService(token)
+	if err != nil {
+		return false, err
+	}
+
 	return result, nil
 }
 
@@ -313,6 +322,28 @@ func PhonePasswordService(Phone string, Password string, Confirm string) (bool, 
 	result, err := dao.UpdatePasswordByPhone(Phone, encryptedPassword)
 	if err != nil {
 		return false, err
+	}
+	return result, nil
+}
+
+// UpdateNicknameService 修改昵称
+func UpdateNicknameService(token string, Nickname string) (map[string]interface{}, error) {
+	// 获取用户id
+	account, err := GetAccountLogin(token)
+	if err != nil {
+		return nil, err
+	}
+	userId := account["id"].(uint)
+	// 防抖
+	redisKey := "update:nickname" + strconv.FormatUint(uint64(userId), 10)
+	lockSuccess := redis.SetNx(redisKey, "1", 10*time.Second)
+	if !lockSuccess {
+		return nil, errors.New("请勿重复点击")
+	}
+	// 修改昵称
+	result, err := dao.UpdateNickNameById(userId, Nickname)
+	if err != nil {
+		return nil, err
 	}
 	return result, nil
 }

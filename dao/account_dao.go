@@ -255,3 +255,19 @@ func UpdatePasswordByPhone(Phone string, password string) (bool, error) {
 	}
 	return true, nil
 }
+
+// UpdateNickNameById 修改昵称
+func UpdateNickNameById(ID uint, nickname string) (map[string]interface{}, error) {
+	var account model.DataAccount
+	err := db.DB.Model(&account).Where("id = ?", ID).Update("nickname", nickname).Error
+	if err != nil {
+		return nil, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("您尚未注册")
+	}
+	_ = db.DB.Model(&account).Where("id = ?", ID).Last(&account).Error
+	return map[string]interface{}{
+		"nickname": account.Nickname,
+	}, nil
+}
