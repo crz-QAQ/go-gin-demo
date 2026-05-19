@@ -229,3 +229,29 @@ func RestoreAccountByID(ID uint) (*model.DataAccount, error) {
 	_ = db.DB.Where("id = ?", ID).First(&account).Error
 	return &account, nil
 }
+
+// UpdatePasswordById 根据id进行密码修改
+func UpdatePasswordById(ID uint, password string) (bool, error) {
+	var account model.DataAccount
+	err := db.DB.Model(&account).Where("id = ?", ID).Update("password", password).Error
+	if err != nil {
+		return false, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("密码修改失败")
+	}
+	return true, nil
+}
+
+// UpdatePasswordByPhone 根据电话进行密码修改
+func UpdatePasswordByPhone(Phone string, password string) (bool, error) {
+	var account model.DataAccount
+	err := db.DB.Model(&account).Where("phone = ?", Phone).Update("password", password).Error
+	if err != nil {
+		return false, err
+	}
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return false, errors.New("密码修改失败")
+	}
+	return true, nil
+}
