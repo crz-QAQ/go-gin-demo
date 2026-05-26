@@ -35,3 +35,20 @@ func GetMessageListByAdmin(page int, pageSize int, status *int8) ([]map[string]i
 	offset := (page - 1) * pageSize
 	return dao.ListMessage(pageSize, offset, status)
 }
+
+// GetMessageListByPersonal 个人查询留言列表
+func GetMessageListByPersonal(token string, page int, pageSize int, status *int8) ([]map[string]interface{}, int64, error) {
+	account, _ := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+
+	offset := (page - 1) * pageSize
+
+	return dao.PersonalListMessage(userIdInt64, pageSize, offset, status)
+}
+
+// GetMessageDetail 查询留言详情
+func GetMessageDetail(ID uint) (*model.DataMessage, error) {
+	return dao.GetMessageDetailById(ID)
+}

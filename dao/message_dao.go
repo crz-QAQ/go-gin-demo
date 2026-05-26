@@ -31,11 +31,8 @@ func ListMessage(pageSize int, offset int, status *int8) ([]map[string]interface
 		Table("data_messages AS m").
 		Joins("LEFT JOIN data_accounts AS a ON a.id = m.account_id")
 
-	// ======================
-	// 修复 1：状态必须加别名 m.
-	// ======================
 	if status != nil {
-		query = query.Where("m.status = ?", *status) // 这里改了！
+		query = query.Where("m.status = ?", *status)
 	}
 
 	// 查询总数
@@ -57,4 +54,48 @@ func ListMessage(pageSize int, offset int, status *int8) ([]map[string]interface
 	}
 
 	return list, total, nil
+}
+
+// PersonalListMessage 个人留言列表
+func PersonalListMessage(AccountID int64, pageSize int, offset int, status *int8) ([]map[string]interface{}, int64, error) {
+	var list []map[string]interface{}
+	var total int64
+	query := db.DB.
+		Table("data_messages AS m").
+		Joins("LEFT JOIN data_accounts AS a ON a.id = m.account_id").
+		Where("m.account_id = ?", AccountID)
+
+	if status != nil {
+		query = query.Where("m.status = ?", *status)
+	}
+
+	// 查询总数
+	err := query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 查询数据
+	err = query.
+		Select("m.id, m.content, m.status, m.created_at, a.name, a.phone").
+		Limit(pageSize).
+		Offset(offset).
+		Order("m.created_at DESC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return list, total, nil
+}
+
+// GetMessageDetailById 根据id查留言详情
+func GetMessageDetailById(ID uint) (*model.DataMessage, error) {
+	var message model.DataMessage
+	err := db.DB.First(&message, ID).Error
+	if err != nil {
+		return nil, err
+	}
+	return &message, nil
 }

@@ -69,6 +69,8 @@ func InitRouter() *gin.Engine {
 		authGroup := messageGroup.Use(middleware.AuthLogin())
 		{
 			authGroup.POST("/create/message", message_api.CreateMessage)
+			authGroup.POST("/list/personal_message", message_api.PersonalGetMessageList)
+			authGroup.POST("/detail/message", message_api.MessageDetail)
 		}
 
 		adminGroup := messageGroup.Use(middleware.AuthLogin(), middleware.AdminAuth())
