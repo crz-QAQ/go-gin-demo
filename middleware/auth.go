@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"encoding/json"
 	"go-gin-demo/pkg/redis"
 
 	"github.com/gin-gonic/gin"
@@ -25,8 +26,20 @@ func AuthLogin() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		var userInfo map[string]interface{}
+		err = json.Unmarshal([]byte(account), &userInfo)
+		if err != nil {
+			c.JSON(401, gin.H{"code": 401, "msg": "用户信息解析失败"})
+			c.Abort()
+			return
+		}
+
+		// 4. 从map取出 role，并转成 int8
+		role := int8(userInfo["role"].(float64))
+
 		c.Set("token", authHeader)
-		c.Set("account", account)
+		c.Set("role", role)
 
 		// 放行
 		c.Next()
