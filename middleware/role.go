@@ -11,7 +11,7 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 		if role.(int8) != 1 {
-			c.JSON(403, gin.H{"code": 403, "msg": "权限不足，只有管理员可审核"})
+			c.JSON(403, gin.H{"code": 403, "msg": "权限不足"})
 			c.Abort()
 			return
 		}

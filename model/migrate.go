@@ -9,5 +9,6 @@ func GetModels() []interface{} {
 		&DataAccount{},
 		&DataAccountToken{},
 		&DataAccountDetail{},
+		&DataMessage{},
 	}
 }

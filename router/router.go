@@ -2,6 +2,7 @@ package router
 
 import (
 	"go-gin-demo/api/account_api"
+	"go-gin-demo/api/message_api"
 	"go-gin-demo/api/redis_api"
 	"go-gin-demo/api/test_user_api"
 	"go-gin-demo/middleware"
@@ -61,6 +62,19 @@ func InitRouter() *gin.Engine {
 			authGroup.POST("/changeNickname", account_api.UpdateNickname)
 		}
 
+	}
+
+	messageGroup := r.Group("/message")
+	{
+		authGroup := messageGroup.Use(middleware.AuthLogin())
+		{
+			authGroup.POST("/create/message", message_api.CreateMessage)
+		}
+
+		adminGroup := messageGroup.Use(middleware.AuthLogin(), middleware.AdminAuth())
+		{
+			adminGroup.POST("/admin/get_message", message_api.AdminGetMessage)
+		}
 	}
 
 	return r
