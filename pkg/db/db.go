@@ -31,6 +31,11 @@ func InitDB() {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
+	// 解决第一次请求链接失败问题
+	if err := sqlDB.Ping(); err != nil {
+		log.Fatalf("数据库PING失败：%v", err)
+	}
+
 	// 赋值给全局DB
 	DB = db
 }
