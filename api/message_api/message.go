@@ -1,7 +1,6 @@
 package message_api
 
 import (
-	"go-gin-demo/dao"
 	"go-gin-demo/pkg/response"
 	"go-gin-demo/service"
 
@@ -92,10 +91,53 @@ func MessageDetail(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	message, err := dao.GetMessageDetailById(param.ID)
+	message, err := service.GetMessageDetail(param.ID)
 	if err != nil {
 		response.Error(c, "获取留言详情失败", err)
 		return
 	}
 	response.Success(c, message, "获取留言详情成功")
+}
+
+func AuditMessageByAdmin(c *gin.Context) {
+	type Param struct {
+		ID     uint   `form:"id" binding:"required"`
+		Status int8   `form:"status" binding:"required"`
+		Remark string `form:"remark"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	resp, err := service.AuditMessage(param.ID, param.Status, param.Remark)
+	if err != nil {
+		response.Error(c, "审核失败", err)
+		return
+	}
+	response.Success(c, resp, "审核成功")
+}
+
+func UserMessageList(c *gin.Context) {
+	type Param struct {
+		Page     int `form:"page" binding:"required,min=1"`
+		PageSize int `form:"pageSize" binding:"required,min=1,max=50"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	list, total, err := service.GetMessageList(param.Page, param.PageSize)
+	if err != nil {
+		response.Error(c, "获取留言列表失败", err)
+		return
+	}
+	response.Success(c, gin.H{
+		"list":     list,
+		"total":    total,
+		"page":     param.Page,
+		"pageSize": param.PageSize,
+	}, "查询成功")
+
 }

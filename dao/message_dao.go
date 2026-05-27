@@ -99,3 +99,48 @@ func GetMessageDetailById(ID uint) (*model.DataMessage, error) {
 	}
 	return &message, nil
 }
+
+// UpdateStatusById 通过Id修改留言状态
+func UpdateStatusById(ID uint, status int8, remark string) (bool, error) {
+	var message model.DataMessage
+	// 同时更新 审核状态 + 审核意见
+	err := db.DB.Model(&message).
+		Where("id = ?", ID).
+		Updates(map[string]interface{}{
+			"status":        status,
+			"reject_reason": remark,
+		}).Error
+
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// UserMessageList 留言列表
+func UserMessageList(pageSize int, offset int) ([]map[string]interface{}, int64, error) {
+	var list []map[string]interface{}
+	var total int64
+	query := db.DB.
+		Table("data_messages AS m").
+		Joins("LEFT JOIN data_accounts AS a ON a.id = m.account_id").
+		Where("m.status = ? AND m.audience = ?", 2, 1)
+
+	err := query.Count(&total).Error
+	if err != nil {
+		return nil, 0, err
+	}
+
+	err = query.
+		Select("m.id, m.created_at, a.name, a.phone").
+		Limit(pageSize).
+		Offset(offset).
+		Order("m.created_at DESC").
+		Find(&list).Error
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	return list, total, nil
+}

@@ -52,3 +52,36 @@ func GetMessageListByPersonal(token string, page int, pageSize int, status *int8
 func GetMessageDetail(ID uint) (*model.DataMessage, error) {
 	return dao.GetMessageDetailById(ID)
 }
+
+// AuditMessage 审核留言
+func AuditMessage(ID uint, status int8, remark string) (bool, error) {
+	// 1. 校验审核状态：只能是 2通过 / 3驳回
+	if status != 2 && status != 3 {
+		return false, errors.New("审核状态有误！")
+	}
+
+	// 驳回时，审核意见不可为空
+	if status == 3 && remark == "" {
+		return false, errors.New("审核意见不能为空！")
+	}
+
+	// 3. 查询留言
+	message, err := dao.GetMessageDetailById(ID)
+	if err != nil {
+		return false, errors.New("留言不存在")
+	}
+
+	// 4. 不能重复审核
+	if message.Status == status {
+		return false, errors.New("留言已审核！")
+	}
+
+	// 5. 更新状态 + 审核意见
+	return dao.UpdateStatusById(ID, status, remark)
+}
+
+// GetMessageList 留言列表
+func GetMessageList(page int, pageSize int) ([]map[string]interface{}, int64, error) {
+	offset := (page - 1) * pageSize
+	return dao.UserMessageList(pageSize, offset)
+}
