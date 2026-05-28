@@ -3,6 +3,7 @@ package middleware
 import (
 	"encoding/json"
 	"go-gin-demo/pkg/redis"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,6 +27,9 @@ func AuthLogin() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		// 用户访问接口 → 自动续期10分钟
+		_ = redis.Expire(redisKey, 10*time.Minute)
 
 		var userInfo map[string]interface{}
 		err = json.Unmarshal([]byte(account), &userInfo)
