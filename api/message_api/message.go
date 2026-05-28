@@ -141,3 +141,61 @@ func UserMessageList(c *gin.Context) {
 	}, "查询成功")
 
 }
+
+// ChangeMessageAudience 修改留言可见范围
+func ChangeMessageAudience(c *gin.Context) {
+	type Param struct {
+		ID       uint `form:"id" binding:"required"`
+		Audience int8 `form:"audience" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	// 获取token
+	token, _ := c.Get("token")
+	resp, err := service.ChangeAudienceById(token.(string), param.ID, param.Audience)
+	if err != nil {
+		response.Error(c, "更新可见范围失败", err)
+		return
+	}
+	response.Success(c, resp, "更新可见范围成功")
+}
+
+// DeleteMessage 删除留言
+func DeleteMessage(c *gin.Context) {
+	type Param struct {
+		ID uint `form:"id" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	// 获取token
+	token, _ := c.Get("token")
+	resp, err := service.DeleteMessageById(token.(string), param.ID)
+	if err != nil {
+		response.Error(c, "删除留言失败", err)
+		return
+	}
+	response.Success(c, resp, "删除留言成功")
+}
+
+func AdminDeleteMessage(c *gin.Context) {
+	type Param struct {
+		ID uint `form:"id" binding:"required"`
+	}
+	var param Param
+	if err := c.ShouldBind(&param); err != nil {
+		response.Error(c, "参数错误", err)
+		return
+	}
+	resp, err := service.DeleteMessageByAdmin(param.ID)
+	if err != nil {
+		response.Error(c, "删除留言失败", err)
+		return
+	}
+	response.Success(c, resp, "删除留言成功")
+}

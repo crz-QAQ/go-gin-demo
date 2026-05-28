@@ -85,3 +85,36 @@ func GetMessageList(page int, pageSize int) ([]map[string]interface{}, int64, er
 	offset := (page - 1) * pageSize
 	return dao.UserMessageList(pageSize, offset)
 }
+
+// ChangeAudienceById 跟新留言可见范围
+func ChangeAudienceById(token string, ID uint, audience int8) (bool, error) {
+	account, _ := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+
+	_, err := dao.SearchMessageById(ID, userIdInt64)
+	if err != nil {
+		return false, err
+	}
+	return dao.UpdateAudienceById(ID, audience)
+}
+
+// DeleteMessageById 删除留言
+func DeleteMessageById(token string, ID uint) (bool, error) {
+	account, _ := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+
+	_, err := dao.SearchMessageById(ID, userIdInt64)
+	if err != nil {
+		return false, err
+	}
+	return dao.DeleteMessageById(ID)
+}
+
+// DeleteMessageByAdmin 管理员删除留言
+func DeleteMessageByAdmin(ID uint) (bool, error) {
+	return dao.DeleteMessageById(ID)
+}

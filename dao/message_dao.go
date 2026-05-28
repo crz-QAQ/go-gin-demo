@@ -1,8 +1,11 @@
 package dao
 
 import (
+	"errors"
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/db"
+
+	"gorm.io/gorm"
 )
 
 // CreateMessage 创建留言
@@ -143,4 +146,39 @@ func UserMessageList(pageSize int, offset int) ([]map[string]interface{}, int64,
 	}
 
 	return list, total, nil
+}
+
+// SearchMessageById 根据id和account_id查留言
+func SearchMessageById(ID uint, accountID int64) (*model.DataMessage, error) {
+	var message model.DataMessage
+	err := db.DB.Model(&message).Where("id = ? AND account_id = ?", ID, accountID).First(&message).Error
+	if errors.Is(err, gorm.ErrRecordNotFound) {
+		return nil, errors.New("您选择的留言不是自己的留言，您无权修改")
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &message, nil
+}
+
+// UpdateAudienceById 根据id更新可见范围
+func UpdateAudienceById(ID uint, audience int8) (bool, error) {
+	var message model.DataMessage
+	err := db.DB.Model(&message).
+		Where("id = ?", ID).
+		Update("audience", audience).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// DeleteMessageById 根据Id删除留言
+func DeleteMessageById(ID uint) (bool, error) {
+	var message model.DataMessage
+	err := db.DB.Model(&message).Where("id = ?", ID).Delete(&message).Error
+	if err != nil {
+		return false, err
+	}
+	return true, nil
 }
