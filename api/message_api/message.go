@@ -110,7 +110,8 @@ func AuditMessageByAdmin(c *gin.Context) {
 		response.Error(c, "参数错误", err)
 		return
 	}
-	resp, err := service.AuditMessage(param.ID, param.Status, param.Remark)
+	token, _ := c.Get("token")
+	resp, err := service.AuditMessage(param.ID, param.Status, param.Remark, token.(string))
 	if err != nil {
 		response.Error(c, "审核失败", err)
 		return

@@ -104,7 +104,7 @@ func GetMessageDetailById(ID uint) (*model.DataMessage, error) {
 }
 
 // UpdateStatusById 通过Id修改留言状态
-func UpdateStatusById(ID uint, status int8, remark string) (bool, error) {
+func UpdateStatusById(ID uint, status int8, remark string, auditorId int64) (bool, error) {
 	var message model.DataMessage
 	// 同时更新 审核状态 + 审核意见
 	err := db.DB.Model(&message).
@@ -112,6 +112,7 @@ func UpdateStatusById(ID uint, status int8, remark string) (bool, error) {
 		Updates(map[string]interface{}{
 			"status":        status,
 			"reject_reason": remark,
+			"auditor_id":    auditorId,
 		}).Error
 
 	if err != nil {

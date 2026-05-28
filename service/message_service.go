@@ -54,7 +54,7 @@ func GetMessageDetail(ID uint) (*model.DataMessage, error) {
 }
 
 // AuditMessage 审核留言
-func AuditMessage(ID uint, status int8, remark string) (bool, error) {
+func AuditMessage(ID uint, status int8, remark string, token string) (bool, error) {
 	// 1. 校验审核状态：只能是 2通过 / 3驳回
 	if status != 2 && status != 3 {
 		return false, errors.New("审核状态有误！")
@@ -76,8 +76,13 @@ func AuditMessage(ID uint, status int8, remark string) (bool, error) {
 		return false, errors.New("留言已审核！")
 	}
 
+	account, _ := GetAccountLogin(token)
+	// 获取用户id
+	userId := account["id"].(uint)
+	userIdInt64 := int64(userId)
+
 	// 5. 更新状态 + 审核意见
-	return dao.UpdateStatusById(ID, status, remark)
+	return dao.UpdateStatusById(ID, status, remark, userIdInt64)
 }
 
 // GetMessageList 留言列表

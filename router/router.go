@@ -4,6 +4,7 @@ import (
 	"go-gin-demo/api/account_api"
 	"go-gin-demo/api/message_api"
 	"go-gin-demo/api/redis_api"
+	"go-gin-demo/api/sign_api"
 	"go-gin-demo/api/test_user_api"
 	"go-gin-demo/middleware"
 
@@ -81,6 +82,20 @@ func InitRouter() *gin.Engine {
 			adminGroup.POST("/admin/get_message", message_api.AdminGetMessage)
 			adminGroup.POST("/admin/audit_message", message_api.AuditMessageByAdmin)
 			adminGroup.DELETE("/admin/delete_message", message_api.AdminDeleteMessage)
+		}
+	}
+
+	signGroup := r.Group("/sign")
+	{
+		authGroup := signGroup.Use(middleware.AuthLogin())
+		{
+			authGroup.GET("/sign", sign_api.Sign)
+			authGroup.POST("/sign/list", sign_api.UserSignList)
+		}
+
+		adminGroup := signGroup.Use(middleware.AuthLogin(), middleware.AdminAuth())
+		{
+			adminGroup.POST("/admin/sign/list", sign_api.AdminSignList)
 		}
 	}
 
