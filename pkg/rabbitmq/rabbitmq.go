@@ -14,7 +14,7 @@ var (
 // 初始化MQ
 func Init() error {
 	var err error
-	conn, err = amqp.Dial("amqp://guest:guest@localhost:5672/")
+	conn, err = amqp.Dial("amqp://guest:guest@127.0.0.1:5672/")
 	if err != nil {
 		return err
 	}
