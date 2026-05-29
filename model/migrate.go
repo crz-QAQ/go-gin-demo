@@ -11,5 +11,6 @@ func GetModels() []interface{} {
 		&DataAccountDetail{},
 		&DataMessage{},
 		&DataSign{},
+		&OperateLog{},
 	}
 }
