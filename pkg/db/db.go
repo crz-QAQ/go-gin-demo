@@ -38,4 +38,6 @@ func InitDB() {
 
 	// 赋值给全局DB
 	DB = db
+	// 连接成功打印
+	log.Println("MySQL 数据库初始化连接成功")
 }
