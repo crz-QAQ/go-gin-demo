@@ -1,36 +1,111 @@
-# go-gin-demo
+go-gin-demo
+Introduction
+Go + Gin + GORM + MySQL + Redis integration development example, providing a standard Web project skeleton to implement interface services, database operations, Redis caching, and other common features.
 
-#### Description
-Go + Gin + GORM + MySQL + Redis 整合开发示例，提供标准 Web 项目骨架，实现接口服务、数据库操作、Redis 缓存等常用功能
+This is a RESTful API backend project developed using the Go language and Gin framework, integrating GORM as the ORM, MySQL as the database, Redis as the cache, and including the integration of the message queue RabbitMQ.
 
-#### Software Architecture
-Software architecture description
+Software Architecture
+go-gin-demo/
+├── main.go                 # 程序入口
+├── api/                   # API 处理器层
+│   ├── account_api/       # 账号相关接口
+│   ├── message_api/      # 消息相关接口
+│   ├── redis_api/        # Redis 操作接口
+│   ├── sign_api/         # 签到相关接口
+│   └── test_user_api/    # 用户测试接口
+├── dao/                   # 数据访问层
+│   ├── account_dao.go
+│   ├── message_dao.go
+│   ├── sign_dao.go
+│   └── user_dao.go
+├── model/                 # 数据模型
+│   ├── Account.go        # 账号模型
+│   ├── Log.go            # 日志模型
+│   ├── Message.go       # 消息模型
+│   ├── OperateLog.go    # 操作日志模型
+│   ├── Sign.go          # 签到模型
+│   ├── User.go          # 用户模型
+│   └── migrate.go       # 数据库迁移
+├── service/               # 业务逻辑层
+│   ├── account_service.go
+│   ├── message_service.go
+│   ├── redis_service.go
+│   ├── sign_service.go
+│   ├── token_service.go
+│   └── user_service.go
+├── middleware/            # 中间件
+│   ├── auth.go           # 登录认证
+│   └── role.go           # 角色权限
+├── pkg/                  # 公共包
+│   ├── base/             # 基础工具
+│   ├── db/               # 数据库连接
+│   ├── rabbitmq/        # RabbitMQ 消息队列
+│   ├── redis/           # Redis 客户端
+│   └── response/        # 统一响应
+├── router/               # 路由配置
+└── vo/                  # 视图对象
+technology stack
+Go - Programming language
+Gin - Web framework
+GORM - ORM framework
+MySQL - Relational database
+Redis - Cache database
+RabbitMQ - message queue
+Features
+User Registration and Login (Token Authentication)
+User Information Management (CRUD, Soft Delete)
+Personal Details Management
+Message Release and Review
+User Check-in System
+Redis Cache Operations
+Unified response format
+Role Permission Control
+Installation Tutorial
+Make sure the Go 1.18+ environment is installed
 
-#### Installation
+Clone the project and install dependencies：
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+go mod download
+Configure MySQL database (create database and import SQL file)
 
-#### Instructions
+Configure Redis service
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+Modify the database connection information in the configuration file
 
-#### Contribution
+Run the project：
 
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
+go run main.go
+Instructions for Use
+The interface service runs by default on http://localhost:8080
 
+Account-related interfaces：
 
-#### Gitee Feature
+POST /api/account/register - Register
+POST /api/account/login - Login
+GET /api/account/personal_msg - Get personal information
+POST /api/account/logout - Log out
+PUT /api/account/update_nickname - Modify Nickname
+DELETE /api/account/delete - Delete Account
+PUT /api/account/restore - Recover account
+Message-related interfaces：
 
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+POST /api/message/create - Create message
+GET /api/message/list - Get message list
+GET /api/message/detail - Message Details
+PUT /api/message/audit - Review message
+DELETE /api/message/delete - Delete message
+Check-in related interfaces：
+
+POST /api/sign/sign - User check-in
+GET /api/sign/user_list - User Sign-in Records
+GET /api/sign/admin_list - Administrator Sign-in Records
+Redis Operation Interface：
+
+POST /api/redis/set - Set cache
+GET /api/redis/get - Get cache
+DELETE /api/redis/del - Delete cache
+Contribute
+Fork this repository
+Create new Feat_xxx branch
+Submit code
+New Pull Request
