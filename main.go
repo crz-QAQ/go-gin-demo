@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/json"
+	"go-gin-demo/dao"
 	"go-gin-demo/model"
 	"go-gin-demo/pkg/db"
 	mq "go-gin-demo/pkg/rabbitmq"
@@ -31,10 +33,18 @@ func main() {
 	logQueue := "operate_log_queue"
 	_, _ = mq.DeclareQueue(logQueue)
 
-	// 开启异步消费日志（后台常驻）
-	go mq.Consume(logQueue, func(data []byte) {
-		// 这里写日志入库逻辑
-		log.Println("异步收到操作日志：", string(data))
+	// 异步消费操作日志，自动入库
+	mq.Consume(logQueue, func(data []byte) {
+		var logMsg model.OperateLogMsg
+		if err := json.Unmarshal(data, &logMsg); err != nil {
+			log.Println("操作日志解析失败：", err)
+			return
+		}
+		// 异步存入数据库
+		err := dao.CreateOperateLog(logMsg)
+		if err != nil {
+			log.Println("操作日志入库失败：", err)
+		}
 	})
 
 	// 初始化路由

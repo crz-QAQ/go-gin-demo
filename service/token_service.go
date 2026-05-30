@@ -10,13 +10,15 @@ import (
 	"github.com/google/uuid"
 )
 
-func SetToken(Phone string, IP string, Role int8) (string, error) {
+func SetToken(Phone string, IP string, Role int8, ID uint, Name string) (string, error) {
 	token := uuid.NewString()
 
 	userInfo := map[string]interface{}{
-		"phone": Phone,
-		"ip":    IP,
-		"role":  Role,
+		"phone":    Phone,
+		"ip":       IP,
+		"role":     Role,
+		"id":       ID,
+		"username": Name,
 	}
 
 	userData, _ := json.Marshal(userInfo)

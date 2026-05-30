@@ -2,6 +2,7 @@ package router
 
 import (
 	"go-gin-demo/api/account_api"
+	"go-gin-demo/api/log_api"
 	"go-gin-demo/api/message_api"
 	"go-gin-demo/api/redis_api"
 	"go-gin-demo/api/sign_api"
@@ -14,6 +15,9 @@ import (
 func InitRouter() *gin.Engine {
 	gin.SetMode("release")
 	r := gin.Default()
+
+	// 全局挂载操作日志中间件，所有接口自动异步记录操作日志
+	r.Use(middleware.OperateLogMiddle())
 
 	// 用户模块
 	userGroup := r.Group("/user")
@@ -96,6 +100,14 @@ func InitRouter() *gin.Engine {
 		adminGroup := signGroup.Use(middleware.AuthLogin(), middleware.AdminAuth())
 		{
 			adminGroup.POST("/admin/sign/list", sign_api.AdminSignList)
+		}
+	}
+
+	logGroup := r.Group("/log")
+	{
+		adminGroup := logGroup.Use(middleware.AuthLogin(), middleware.AdminAuth())
+		{
+			adminGroup.POST("/list", log_api.OperateList)
 		}
 	}
 
