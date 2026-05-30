@@ -1,10 +1,13 @@
-go-gin-demo
-Introduction
+# go-gin-demo
+
+### Introduction
+
 Go + Gin + GORM + MySQL + Redis integration development example, providing a standard Web project skeleton to implement interface services, database operations, Redis caching, and other common features.
 
 This is a RESTful API backend project developed using the Go language and Gin framework, integrating GORM as the ORM, MySQL as the database, Redis as the cache, and including the integration of the message queue RabbitMQ.
 
-Software Architecture
+### Software Architecture
+```
 go-gin-demo/
 ├── main.go                 # 程序入口
 ├── api/                   # API 处理器层
@@ -44,68 +47,72 @@ go-gin-demo/
 │   └── response/        # 统一响应
 ├── router/               # 路由配置
 └── vo/                  # 视图对象
-technology stack
-Go - Programming language
-Gin - Web framework
-GORM - ORM framework
-MySQL - Relational database
-Redis - Cache database
-RabbitMQ - message queue
-Features
-User Registration and Login (Token Authentication)
-User Information Management (CRUD, Soft Delete)
-Personal Details Management
-Message Release and Review
-User Check-in System
-Redis Cache Operations
-Unified response format
-Role Permission Control
-Installation Tutorial
-Make sure the Go 1.18+ environment is installed
+```
+### technology stack
 
-Clone the project and install dependencies：
+- **Go** - Programming language
+- **Gin** - Web framework
+- **GORM** - ORM framework
+- **MySQL** - Relational database
+- **Redis** - Cache database
+- **RabbitMQ** - message queue
 
+### Features
+
+- User Registration and Login (Token Authentication)
+- User Information Management (CRUD, Soft Delete)
+- Personal Details Management
+- Message Release and Review
+- User Check-in System
+- Redis Cache Operations
+- Unified response format
+- Role Permission Control
+
+### Installation Tutorial
+
+1. Make sure the Go 1.18+ environment is installed
+2. Clone the project and install dependencies：
+``` bash
 go mod download
-Configure MySQL database (create database and import SQL file)
+```
+3. Configure MySQL database (create database and import SQL file)
+4. Configure Redis service
+5. Modify the database connection information in the configuration file
 
-Configure Redis service
-
-Modify the database connection information in the configuration file
-
-Run the project：
-
+6. Run the project：
+``` bash
 go run main.go
-Instructions for Use
-The interface service runs by default on http://localhost:8080
+```
 
-Account-related interfaces：
+### Instructions for Use
+1. The interface service runs by default on `http://localhost:8080`
 
-POST /api/account/register - Register
-POST /api/account/login - Login
-GET /api/account/personal_msg - Get personal information
-POST /api/account/logout - Log out
-PUT /api/account/update_nickname - Modify Nickname
-DELETE /api/account/delete - Delete Account
-PUT /api/account/restore - Recover account
-Message-related interfaces：
+2. Account-related interfaces：
+   - POST `/api/account/register` - Register
+   - POST `/api/account/login` - Login
+   - GET `/api/account/personal_msg` - Get personal information
+   - POST `/api/account/logout` - Log out
+   - PUT `/api/account/update_nickname` - Modify Nickname
+   - DELETE `/api/account/delete` - Delete Account
+   - PUT `/api/account/restore` - Recover account
 
-POST /api/message/create - Create message
-GET /api/message/list - Get message list
-GET /api/message/detail - Message Details
-PUT /api/message/audit - Review message
-DELETE /api/message/delete - Delete message
-Check-in related interfaces：
+3. Message-related interfaces：
+   - POST `/api/message/create` - Create message
+   - GET `/api/message/list` - Get message list
+   - GET `/api/message/detail` - Message Details
+   - PUT `/api/message/audit` - Review message
+   - DELETE `/api/message/delete` - Delete message
+4. Check-in related interfaces：
+   - POST `/api/sign/sign` - User check-in
+   - GET `/api/sign/user_list` - User Sign-in Records
+   - GET `/api/sign/admin_list` - Administrator Sign-in Records
+5. Redis Operation Interface：
+   - POST `/api/redis/set` - Set cache
+   - GET `/api/redis/get` - Get cache
+   - DELETE `/api/redis/del` - Delete cache
 
-POST /api/sign/sign - User check-in
-GET /api/sign/user_list - User Sign-in Records
-GET /api/sign/admin_list - Administrator Sign-in Records
-Redis Operation Interface：
-
-POST /api/redis/set - Set cache
-GET /api/redis/get - Get cache
-DELETE /api/redis/del - Delete cache
-Contribute
-Fork this repository
-Create new Feat_xxx branch
-Submit code
-New Pull Request
+### Contribute
+1. Fork this repository
+2. Create new Feat_xxx branch
+3. Submit code
+4. New Pull Request

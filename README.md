@@ -2,13 +2,13 @@
 
 # go-gin-demo
 
-#### 介绍
+### 介绍
 
 Go + Gin + GORM + MySQL + Redis 整合开发示例，提供标准 Web 项目骨架实现接口服务、数据库操作、Redis 缓存等常用功能。
 
 这是一个基于 Go 语言和 Gin 框架开发的 RESTful API 后端项目，集成了 GORM 作为 ORM、MySQL 作为数据库、Redis 作为缓存，并包含消息队列 RabbitMQ 的集成。
 
-#### 软件架构
+### 软件架构
 
 ```
 go-gin-demo/
@@ -52,7 +52,7 @@ go-gin-demo/
 └── vo/                  # 视图对象
 ```
 
-#### 技术栈
+### 技术栈
 
 - **Go** - 编程语言
 - **Gin** - Web 框架
@@ -61,7 +61,7 @@ go-gin-demo/
 - **Redis** - 缓存数据库
 - **RabbitMQ** - 消息队列
 
-#### 功能特性
+### 功能特性
 
 - 用户注册登录（Token 认证）
 - 用户信息管理（CRUD、软删除）
@@ -72,7 +72,7 @@ go-gin-demo/
 - 统一响应格式
 - 角色权限控制
 
-#### 安装教程
+### 安装教程
 
 1. 确保已安装 Go 1.18+ 环境
 
@@ -92,7 +92,7 @@ go-gin-demo/
    go run main.go
    ```
 
-#### 使用说明
+### 使用说明
 
 1. 接口服务默认运行在 `http://localhost:8080`
 
@@ -122,7 +122,7 @@ go-gin-demo/
    - GET `/api/redis/get` - 获取缓存
    - DELETE `/api/redis/del` - 删除缓存
 
-#### 参与贡献
+### 参与贡献
 
 1. Fork 本仓库
 2. 新建 Feat_xxx 分支
