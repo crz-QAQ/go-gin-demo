@@ -2,6 +2,7 @@ package db
 
 import (
 	"log"
+	"os"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -11,7 +12,11 @@ import (
 var DB *gorm.DB
 
 func InitDB() {
-	dsn := "root:Cielo691827am.@(127.0.0.1:3306)/gorm_study?charset=utf8mb4&parseTime=True&loc=Local"
+	dsn := os.Getenv("DB_DSN")
+	if dsn == "" {
+		// 本地开发固定连接
+		dsn = "root:Cielo691827am.@(127.0.0.1:3306)/gorm_study?charset=utf8mb4&parseTime=True&loc=Local"
+	}
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		// 关闭日志 或 开启日志

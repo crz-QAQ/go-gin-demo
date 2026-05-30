@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"log"
+	"os"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -14,12 +15,24 @@ var (
 
 // Init Redis的初始化
 func Init() {
+	// 读取环境变量
+	addr := os.Getenv("REDIS_ADDR")
+	pwd := os.Getenv("REDIS_PASSWORD")
+	dbIdx := 0
+
+	// 本地无环境变量使用本地配置
+	if addr == "" {
+		addr = "127.0.0.1:6379"
+		pwd = ""
+	}
+
 	client = redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6379",
-		Password: "",
-		DB:       0,
+		Addr:     addr,
+		Password: pwd,
+		DB:       dbIdx,
 		Protocol: 2,
 	})
+
 	// 测试连接
 	_, err := client.Ping(ctx).Result()
 	if err != nil {

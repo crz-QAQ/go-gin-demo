@@ -9,6 +9,7 @@ import (
 	"go-gin-demo/pkg/redis"
 	"go-gin-demo/router"
 	"log"
+	"os"
 )
 
 func main() {
@@ -50,6 +51,11 @@ func main() {
 	// 初始化路由
 	r := router.InitRouter()
 
-	// 启动
-	_ = r.Run("0.0.0.0:8080")
+	// 适配Railway自动端口
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	log.Println("服务启动端口：" + port)
+	_ = r.Run("0.0.0.0:" + port)
 }
