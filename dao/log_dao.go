@@ -28,7 +28,8 @@ func ListOperate(pageSize int, offset int, Phone string, Status *int8) ([]map[st
 	var list []map[string]interface{}
 	var total int64
 	query := db.DB.Table("operate_logs as ol").
-		Joins("left join data_accounts as a ON a.id = ol.user_id")
+		Joins("left join data_accounts as a ON a.id = ol.user_id").
+		Where("ol.deleted_at IS NULL")
 
 	if Phone != "" {
 		query = query.Where("a.phone = ?", Phone)
